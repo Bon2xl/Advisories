@@ -1,2 +1,0 @@
-# Advisories
-Drupal Module
