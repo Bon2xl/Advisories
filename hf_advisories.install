@@ -1,0 +1,109 @@
+<?php
+// include_once 'hf_advisories_field.inc';
+
+
+/**
+ * Implements hook_install().
+ */
+function hf_advisories_install() {
+    node_types_rebuild();
+    $types = node_type_get_types();
+    node_add_body_field($types['hf_advisories']); 
+    add_custom_fields();
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function hf_advisories_uninstall() {
+    $ournewtype = 'hf_advisories';
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query($sql, array(':type' => $ournewtype));
+    $nodeids = array();
+    foreach ($result as $row) {
+        $nodeids[] = $row->nid;
+    }
+    node_delete_multiple($nodeids);
+    delete_custom_fields();
+    node_type_delete($ournewtype);
+    field_purge_batch(500);
+}
+
+
+
+function add_custom_fields() {
+    foreach (hf_advisories_installed_fields() as $field) {
+        field_create_field($field);
+    }
+    foreach (hf_advisories_installed_instances() as $fieldinstance) {
+        $fieldinstance['entity_type'] = 'node';
+        $fieldinstance['bundle'] = 'node_content';
+        print_r($fieldinstance);
+        field_create_instance($fieldinstance);
+    }
+}
+
+
+function delete_custom_fields() {
+    foreach (array_keys(hf_advisories_installed_fields()) as $field) {
+        field_delete_field($field);
+    }
+    $instances = field_info_instances('node', 'hf_advisories');
+    foreach ($instances as $instance_name => $fieldinstance) {
+        field_delete_instance($fieldinstance);
+    }
+}
+
+
+
+
+function hf_advisories_installed_fields() {
+    $t = get_t();
+    return array(
+        'hf_advisories_price' => array(
+            'field_name' => 'hf_advisories_price',
+            'label' => $t('Price of the product'),
+            'type' => 'text'
+        ),
+        'hf_advisories_quantity' => array(
+            'field_name' => 'hf_advisories_quantity',
+            'label' => $t('Quantity of the product'),
+            'type' => 'text'
+        )
+    );
+}
+
+function hf_advisories_installed_instances() {
+    $t = get_t();
+    return array(
+        'hf_advisories_price' => array(
+            'field_name' => 'hf_advisories_price',
+            'type' => 'text',
+            'label' => $t('Price of the product'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'example_node_list' => array(
+                    'label' => $t('Price of the product'),
+                    'type' => 'text'
+                )
+            )
+        ),
+        'hf_advisories_quantity' => array(
+            'field_name' => 'hf_advisories_quantity',
+            'type' => 'text',
+            'label' => $t('Quantity of the product'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'example_node_list' => array(
+                    'label' => $t('Quantity of the product'),
+                    'type' => 'text'
+                )
+            )
+        )
+    );
+}

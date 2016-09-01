@@ -1,0 +1,19 @@
+name = Stacks Advisories
+description = Stacks Advisories
+core = 7.x
+version = 7.x-0.1
+;dependencies[] = date
+;dependencies[] = field_group
+;dependencies[] = field_sql_storage
+;dependencies[] = link
+;dependencies[] = list
+;dependencies[] = node
+;dependencies[] = options
+;dependencies[] = text
+
+
+;Styles
+;stylesheets[all][] = css/hf_advisories.css
+
+;Scripts
+;scripts[] = js/hf_advisories.js
